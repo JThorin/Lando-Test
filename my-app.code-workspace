@@ -1,0 +1,50 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    // Formatting Behavior
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    // ESLint
+    "eslint.enable": true,
+    "eslint.debug": true,
+    "eslint.useFlatConfig": true,
+    "eslint.lintTask.enable": true,
+    "eslint.format.enable": true,
+    "eslint.workingDirectories": ["./angular-app", "./nestjs-app"],
+    "eslint.codeActionsOnSave.mode": "all",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+    // File Handling
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+      // Docker/Lando Volume Overrides
+      // These files are mounted into containers but not part of the actual source
+      "*/.prettier*": true
+    },
+    // Force Prettier Config
+    "prettier.requireConfig": true,
+    // Specific Filetype Formatters
+    "[typescript]": {
+      "editor.formatOnSave": false,
+      "editor.defaultFormatter": null
+    },
+    "[prisma]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "Prisma.prisma"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "angular.ng-template",
+      "prisma.prisma",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint"
+    ]
+  }
+}

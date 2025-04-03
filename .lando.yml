@@ -1,0 +1,87 @@
+name: my-lando-app
+excludes:
+  - node_modules
+  - dist
+  - .git
+services:
+  angular:
+    type: node:22
+    globals:
+      gulp-cli: latest
+    build:
+      - npm install
+    command: npm run start
+    port: 4200
+    ssl: true
+    overrides:
+      hostname: angular
+      working_dir: /app
+      volumes:
+        - ./angular-app:/app
+        - .prettierrc:/app/.prettierrc
+        - .prettierignore:/app/.prettierignore
+
+  nestjs:
+    type: node:22
+    build:
+      - npm install
+      - npx prisma migrate deploy
+      - npx prisma generate
+      #- npx prisma db seed
+    command: npm run start:dev
+    port: 3000
+    ssl: true
+    overrides:
+      hostname: nestjs
+      environment:
+        - DATABASE_URL=postgresql://postgres:postgres@postgres/myapp?schema=public
+        - NODE_ENV=development
+      volumes:
+        - ./nestjs-app:/app
+        - .prettierrc:/app/.prettierrc
+        - .prettierignore:/app/.prettierignore
+      depends_on:
+        - postgres
+
+  postgres:
+    type: postgres
+    creds:
+      user: postgres
+      password: postgres
+      database: myapp
+
+  redis:
+    type: redis
+    persist: true
+
+  mailhog:
+    type: mailhog
+    ssl: true
+
+proxy:
+  angular:
+    - myapp.local:4200
+  nestjs:
+    - api.myapp.local:3000
+  mailhog:
+    - mail.myapp.local
+
+tooling:
+  psql:
+    service: postgres
+  test:
+    description: Run all the tests
+    cmd:
+      - angular: npm run test
+      - nestjs: npm run test && npm run test:e2e && npm run test:cov
+  prettify:
+    cmd:
+      - angular: npm run prettify
+      - nestjs: npm run prettify
+  lint:
+     cmd:
+      - angular: npm run lint
+      - nestjs: npm run lint
+  prisma-validate:
+    service: nestjs
+    cmd: npx prisma validate
