@@ -8,6 +8,9 @@ services:
     type: node:22
     globals:
       gulp-cli: latest
+    build_as_root:
+      - apt update
+      - apt install -y chromium
     build:
       - npm install
     command: npm run start
@@ -16,6 +19,8 @@ services:
     overrides:
       hostname: angular
       working_dir: /app
+      environment:
+        - CHROME_BIN=/usr/bin/chromium
       volumes:
         - ./angular-app:/app
         - .prettierrc:/app/.prettierrc
@@ -79,7 +84,7 @@ tooling:
       - angular: npm run prettify
       - nestjs: npm run prettify
   lint:
-     cmd:
+    cmd:
       - angular: npm run lint
       - nestjs: npm run lint
   prisma-validate:
