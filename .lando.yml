@@ -12,10 +12,11 @@ services:
       - apt update
       - apt install -y chromium
     build:
+      - npm install -g npm@11.3.0
       - npm install
     command: npm run start
     port: 4200
-    ssl: true
+    ssl: 4443
     overrides:
       hostname: angular
       working_dir: /app
@@ -29,13 +30,14 @@ services:
   nestjs:
     type: node:22
     build:
+      - npm install -g npm@11.3.0
       - npm install
       - npx prisma migrate deploy
       - npx prisma generate
       #- npx prisma db seed
     command: npm run start:dev
     port: 3000
-    ssl: true
+    ssl: 4443
     overrides:
       hostname: nestjs
       environment:
@@ -74,19 +76,32 @@ proxy:
 tooling:
   psql:
     service: postgres
+  format:
+    description: Run formatters
+    cmd:
+      - angular: npm run format
+      - nestjs: npm run format
+  lint:
+    description: Run linters
+    cmd:
+      - angular: npm run lint
+      - nestjs: npm run lint
+  type-check:
+    desicription: Run type checking
+    cmd:
+      - angular: npm run type-check
+      - nestjs: npm run type-check
+  prisma-validate:
+    description: Validate the Prisma schema
+    service: nestjs
+    cmd: npx prisma validate
   test:
     description: Run all the tests
     cmd:
       - angular: npm run test
       - nestjs: npm run test && npm run test:e2e && npm run test:cov
-  prettify:
+  build:
+    description: Build the apps
     cmd:
-      - angular: npm run prettify
-      - nestjs: npm run prettify
-  lint:
-    cmd:
-      - angular: npm run lint
-      - nestjs: npm run lint
-  prisma-validate:
-    service: nestjs
-    cmd: npx prisma validate
+      - angular: npm run build
+      - nestjs: npm run build

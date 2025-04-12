@@ -1,0 +1,6 @@
+#!/bin/sh
+
+lando format
+lando lint
+lando type-check
+lando prisma-validate
